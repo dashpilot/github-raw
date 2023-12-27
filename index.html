@@ -10,11 +10,31 @@
       integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
       crossorigin="anonymous"
     />
+    <script src="//unpkg.com/alpinejs" defer></script>
   </head>
 
   <body>
-    <div class="container">
-      <h1>Hello world</h1>
+    <div x-data="app">
+      <div class="container mt-5">
+        <template x-for="item in data.posts">
+          <section class="p-2">
+            <h2 x-text="item.title"></h2>
+            <div x-html="item.body"></div>
+          </section>
+        </template>
+      </div>
     </div>
+
+    <script>
+      function app() {
+        return {
+          data: {},
+          async init() {
+            const response = await fetch("/data.json");
+            this.data = await response.json();
+          },
+        };
+      }
+    </script>
   </body>
 </html>

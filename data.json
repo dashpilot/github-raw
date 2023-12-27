@@ -1,0 +1,12 @@
+{
+  "posts": [
+    {
+      "title": "Hello World",
+      "body": "Lorem ipsum dolor site amet"
+    },
+    {
+      "title": "Hi there",
+      "body": "Lorem ipsum dolor site amet"
+    }
+  ]
+}
