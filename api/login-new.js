@@ -140,7 +140,7 @@ export default async function handler(req) {
             status: 200,
             headers: {
               // "Set-Cookie": `token=${data.token}; path=/;`, //  HttpOnly; SameSite=Lax
-              "Set-Cookie": `token=${data.token}; path=/; HttpOnly; SameSite=Strict;`,
+              "set-cookie": `token=${data.token}; path=/; HttpOnly; SameSite=Lax`, //  HttpOnly; SameSite=Strict; Secure
               "HX-redirect": "/",
             },
           });
