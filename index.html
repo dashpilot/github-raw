@@ -36,7 +36,7 @@
           data: {},
           async init() {
             const response = await fetch(
-              `https://raw.githubusercontent.com/dashpilot/github-raw/main/data.json?token=${Date.now()}`,
+              `https://api.frontsome.net/data/tester/data.json`,
               {
                 cache: "no-store",
               }
@@ -45,7 +45,8 @@
           },
           save() {
             const mydata = {
-              content: JSON.stringify(this.data),
+              type: "json",
+              data: this.data,
             };
 
             fetch("/api/save", {
