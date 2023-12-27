@@ -19,10 +19,13 @@
         <template x-for="item in data.posts">
           <section class="p-2">
             <h2 x-text="item.title"></h2>
+            <input type="text" class="form-control" x-model="item.title" />
             <div x-html="item.body"></div>
           </section>
         </template>
       </div>
+
+      <button class="btn btn-outline-dark" @click="save()">Save</button>
     </div>
 
     <script>
@@ -30,8 +33,31 @@
         return {
           data: {},
           async init() {
-            const response = await fetch("/data.json");
+            const response = await fetch(
+              `https://raw.githubusercontent.com/dashpilot/github-raw/main/data.json?${Date.now()}`,
+              {
+                cache: "no-store",
+              }
+            );
             this.data = await response.json();
+          },
+          save() {
+            const mydata = {
+              content: JSON.stringify(this.data),
+            };
+
+            fetch("/api/save", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(mydata),
+            })
+              .then((response) => response.json())
+              .then((data) => console.log(data))
+              .catch((error) => {
+                console.error("Error:", error);
+              });
           },
         };
       }
