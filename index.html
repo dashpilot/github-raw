@@ -25,7 +25,13 @@
         </template>
 
         <button class="btn btn-outline-dark ms-2 mt-3" @click="save()">
-          Save
+          <span x-show="!loading">
+            Save
+          </span>
+          <span x-show="loading">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          </template>
+         
         </button>
       </div>
     </div>
@@ -34,6 +40,7 @@
       function app() {
         return {
           data: {},
+          loading: false,
           async init() {
             const response = await fetch(
               `https://api.frontsome.net/data/tester/data.json`,
@@ -44,6 +51,7 @@
             this.data = await response.json();
           },
           save() {
+            this.loading = true;
             const mydata = {
               type: "json",
               data: this.data,
@@ -57,8 +65,12 @@
               body: JSON.stringify(mydata),
             })
               .then((response) => response.json())
-              .then((data) => console.log(data))
+              .then((data) => {
+                this.loading = false;
+                console.log(data)
+              })
               .catch((error) => {
+                this.loading = false;
                 console.error("Error:", error);
               });
           },

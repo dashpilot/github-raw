@@ -13,7 +13,8 @@ export default async function handler(req) {
   if (req.method == "GET") {
     // Generate a CSRF token
     const csrfToken = generateToken(100);
-    // console.log(req)
+
+    // var token = req.headers.get("cookie");
 
     const html = `<!DOCTYPE html>
             <html lang="en">
