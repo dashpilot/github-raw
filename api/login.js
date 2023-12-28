@@ -3,12 +3,17 @@ export const config = {
 };
 
 export default async function handler(req) {
+  const env = process.env.VERCEL_ENV;
+
+  var cookie_params = "SameSite=Lax";
+  if (env == "production") {
+    cookie_params = "SameSite=Strict; Secure";
+  }
+
   if (req.method == "GET") {
     // Generate a CSRF token
     const csrfToken = generateToken(100);
     // console.log(req)
-
-    const env = process.env.VERCEL_ENV;
 
     const html = `<!DOCTYPE html>
             <html lang="en">
@@ -27,9 +32,9 @@ export default async function handler(req) {
                       <div class="card-body">
                         <h3 class="text-center">Login</h3>
     
-                        <div id="result">${env}</div>
+                        <div id="result"></div>
     
-                        <form hx-post="/api/login-new" hx-trigger="submit" hx-target="#result" hx-indicator="#spinner">
+                        <form hx-post="/api/login" hx-trigger="submit" hx-target="#result" hx-indicator="#spinner">
                             <div class="form-group">
                               <label class="mb-1" for="username">Username</label>
                               <input type="username" class="form-control mb-2" id="username" name="username">
@@ -74,21 +79,11 @@ export default async function handler(req) {
             </html>
             `;
 
-    /*
-    if (process.env.MODE == "dev") {
-      res.setHeader("Set-Cookie", `csrfToken=${csrfToken}; path=/;`);
-    } else {
-      res.setHeader(
-        "Set-Cookie",
-        `csrfToken=${csrfToken}; path=/; SameSite=Strict; HttpOnly;`
-      );
-    }
-    */
-
     return new Response(html, {
       status: 200,
       headers: {
         "content-type": "text/html",
+        // "set-cookie": `csrfToken=${csrfToken}; path=/; HttpOnly; ${cookie_params}`,
       },
     });
 
@@ -99,9 +94,9 @@ export default async function handler(req) {
     const username = form.get("username").trim().toLowerCase();
     const password = form.get("password").trim();
 
-    // const csrfTokenCookie = req.cookies.csrfToken;
-
     /*
+    const csrfTokenCookie = req.cookies.csrfToken;
+
     if (!body.csrfToken || body.csrfToken !== csrfTokenCookie) {
       responseError(res, "Invalid CSRF token");
       return;
@@ -129,6 +124,7 @@ export default async function handler(req) {
       body: JSON.stringify({
         username: username,
         password: password,
+        aud: req.url,
       }),
     })
       .then((response) => response.json())
@@ -141,8 +137,7 @@ export default async function handler(req) {
           return new Response("", {
             status: 200,
             headers: {
-              // "Set-Cookie": `token=${data.token}; path=/;`, //  HttpOnly; SameSite=Lax
-              "set-cookie": `token=${data.token}; path=/; HttpOnly; SameSite=Lax`, //  HttpOnly; SameSite=Strict; Secure
+              "set-cookie": `token=${data.token}; path=/; HttpOnly; ${cookie_params}`,
               "HX-redirect": "/",
             },
           });
